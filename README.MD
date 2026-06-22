@@ -70,8 +70,12 @@ npm run web:proxy   # 浏览器预览
 # iOS
 npx expo build:ios
 
-# Android
-npx expo build:android
+# Android APK（本地真机安装）
+eas build -p android --profile preview
+
+# Android AAB（Google Play）
+eas build -p android --profile production
+
 # 或 EAS Build
 npx eas build --platform all
 ```

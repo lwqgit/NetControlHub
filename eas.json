@@ -9,10 +9,16 @@
       "distribution": "internal"
     },
     "preview": {
+      "nodeVersion": "22.19.0",
+      "npmVersion": "10.9.3",
+      "nodePackageManager": "npm",
       "distribution": "internal",
       "android": { "buildType": "apk" }
     },
     "production": {
+      "nodeVersion": "22.19.0",
+      "npmVersion": "10.9.3",
+      "nodePackageManager": "npm",
       "android": { "buildType": "apk" },
       "autoIncrement": true
     }
