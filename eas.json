@@ -13,7 +13,6 @@
     },
     "production": {
       "node": "22.19.0",
-      "npm": "10.9.3",
       "android": { "buildType": "apk" },
       "autoIncrement": true
     }
