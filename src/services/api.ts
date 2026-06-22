@@ -122,7 +122,10 @@ async function apiPost<T = ApiResponse>(
     if (err.name === 'AbortError') {
       throw new Error('路由器响应超时，请检查网络连接');
     }
-    throw new Error('无法连接到路由器，请确认已连接家庭WiFi');
+    // 保留原始错误信息，方便排查问题（如 Android 明文 HTTP 拦截等）
+    const detail = err?.message || String(err);
+    console.error(`[apiPost] 请求失败 -> ${fetchUrl}: ${detail}`);
+    throw new Error(`无法连接到路由器(${detail})，请确认已连接家庭WiFi`);
   }
 }
 
