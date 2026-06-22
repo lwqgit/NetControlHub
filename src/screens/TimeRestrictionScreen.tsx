@@ -252,10 +252,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   backBtn: {
-    width: 32,
-    height: 32,
+    width: 44,
+    height: 44,
     backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 16,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
   },

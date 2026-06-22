@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -48,6 +49,15 @@ export default function DeviceDetailScreen() {
     if (val === 0) return '不限速';
     if (val >= 1024) return `${(val / 1024).toFixed(1).replace('.0', '')} MB/s`;
     return `${val} KB/s`;
+  };
+
+  const handleManualInput = (text: string, setter: (v: number) => void) => {
+    const num = parseInt(text, 10);
+    if (!isNaN(num)) {
+      setter(Math.max(0, Math.min(num, maxSpeed)));
+    } else if (text === '') {
+      setter(0);
+    }
   };
 
   const showToast = (message: string, type: 'info' | 'error' | 'success') => {
@@ -212,11 +222,22 @@ export default function DeviceDetailScreen() {
                     <Text style={styles.sliderLabelText}>⬇️ 下载限速</Text>
                     <Text style={styles.sliderVal}>{formatSliderVal(downLimit)}</Text>
                   </View>
+                  <View style={styles.inputRow}>
+                    <Text style={styles.inputLabel}>手动输入 (KB/s):</Text>
+                    <TextInput
+                      style={styles.manualInput}
+                      value={downLimit === 0 ? '' : String(downLimit)}
+                      placeholder="如 1024"
+                      placeholderTextColor={Colors.gray400}
+                      keyboardType="numeric"
+                      onChangeText={text => handleManualInput(text, setDownLimit)}
+                    />
+                  </View>
                   <Slider
                     style={styles.slider}
                     minimumValue={0}
                     maximumValue={maxSpeed}
-                    step={256}
+                    step={1}
                     value={downLimit}
                     onValueChange={setDownLimit}
                     minimumTrackTintColor={Colors.primary}
@@ -238,11 +259,22 @@ export default function DeviceDetailScreen() {
                     <Text style={styles.sliderLabelText}>⬆️ 上传限速</Text>
                     <Text style={styles.sliderVal}>{formatSliderVal(upLimit)}</Text>
                   </View>
+                  <View style={styles.inputRow}>
+                    <Text style={styles.inputLabel}>手动输入 (KB/s):</Text>
+                    <TextInput
+                      style={styles.manualInput}
+                      value={upLimit === 0 ? '' : String(upLimit)}
+                      placeholder="如 512"
+                      placeholderTextColor={Colors.gray400}
+                      keyboardType="numeric"
+                      onChangeText={text => handleManualInput(text, setUpLimit)}
+                    />
+                  </View>
                   <Slider
                     style={styles.slider}
                     minimumValue={0}
                     maximumValue={maxSpeed}
-                    step={256}
+                    step={1}
                     value={upLimit}
                     onValueChange={setUpLimit}
                     minimumTrackTintColor={Colors.success}
@@ -343,7 +375,7 @@ export default function DeviceDetailScreen() {
           </View>
 
           {/* 断网按钮 */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.blockBtn}
             onPress={handleToggleBlock}
             disabled={blockLoading}
@@ -356,7 +388,7 @@ export default function DeviceDetailScreen() {
                 {device.blocked ? '🔗 恢复此设备网络' : '🚫 断开此设备网络'}
               </Text>
             )}
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <View style={{ height: 30 }} />
         </View>
@@ -402,10 +434,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backBtn: {
-    width: 32,
-    height: 32,
+    width: 44,
+    height: 44,
     backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 16,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -569,6 +601,27 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.primary,
     fontWeight: '700',
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  inputLabel: {
+    fontSize: 12,
+    color: Colors.gray500,
+  },
+  manualInput: {
+    flex: 1,
+    height: 32,
+    borderWidth: 1,
+    borderColor: Colors.gray200,
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    fontSize: 13,
+    color: Colors.gray800,
+    backgroundColor: Colors.gray50,
   },
   slider: {
     width: '100%',
