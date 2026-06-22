@@ -30,5 +30,9 @@
     "web:proxy": "node proxy-server.js & expo start --web",
     "proxy": "node proxy-server.js"
   },
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
   "private": true
 }
