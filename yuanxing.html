@@ -1,0 +1,2503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetControl Hub - 网络管理App原型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #2563EB;
+            --primary-dark: #1D4ED8;
+            --primary-light: #EFF6FF;
+            --success: #10B981;
+            --success-light: #ECFDF5;
+            --warning: #F59E0B;
+            --warning-light: #FFFBEB;
+            --danger: #EF4444;
+            --danger-light: #FEF2F2;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+            background: #E8EAED;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        /* 手机容器 */
+        .phone-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .phone-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .phone {
+            width: 390px;
+            height: 844px;
+            background: #fff;
+            border-radius: 44px;
+            box-shadow: 0 0 0 2px #1a1a1a, 0 0 0 6px #2a2a2a, var(--shadow-lg);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            height: 44px;
+            background: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .status-bar .time {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .status-bar .icons {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-bar .icons svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--gray-800);
+        }
+
+        /* 屏幕内容 */
+        .screen {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .screen::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 底部导航 */
+        .tab-bar {
+            height: 83px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            align-items: flex-start;
+            padding-top: 8px;
+            flex-shrink: 0;
+        }
+
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tab-icon svg {
+            width: 24px;
+            height: 24px;
+            transition: all 0.2s;
+        }
+
+        .tab-text {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--gray-400);
+        }
+
+        .tab-item.active .tab-text {
+            color: var(--primary);
+        }
+
+        .tab-item.active .tab-icon svg {
+            fill: var(--primary);
+        }
+
+        .tab-icon svg {
+            fill: var(--gray-400);
+        }
+
+        /* ===== 登录页面 ===== */
+        #screen-login {
+            background: linear-gradient(145deg, #1E3A8A 0%, #2563EB 50%, #3B82F6 100%);
+            display: flex;
+            flex-direction: column;
+            padding: 0 28px;
+            min-height: 100%;
+        }
+
+        .login-top {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 40px;
+        }
+
+        .app-logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .app-logo svg {
+            width: 44px;
+            height: 44px;
+            fill: white;
+        }
+
+        .app-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 6px;
+        }
+
+        .app-tagline {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 28px 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .login-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 6px;
+        }
+
+        .login-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-600);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 48px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            padding: 0 44px 0 14px;
+            font-size: 15px;
+            color: var(--gray-800);
+            background: var(--gray-50);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--gray-400);
+        }
+
+        .input-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--gray-400);
+        }
+
+        .remember-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox svg {
+            width: 12px;
+            height: 12px;
+            fill: white;
+        }
+
+        .checkbox-label {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .router-addr {
+            font-size: 12px;
+            color: var(--primary);
+        }
+
+        .btn-login {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        .security-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.3);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            margin-top: 16px;
+        }
+
+        .security-note svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--warning);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .security-note p {
+            font-size: 11px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        .error-banner {
+            background: var(--danger-light);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .error-banner svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--danger);
+            flex-shrink: 0;
+        }
+
+        .error-banner span {
+            font-size: 13px;
+            color: var(--danger);
+        }
+
+        /* ===== 设备列表页面 ===== */
+        #screen-devices {
+            background: var(--gray-50);
+            min-height: 100%;
+        }
+
+        .nav-header {
+            background: white;
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .nav-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .nav-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .nav-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .refresh-btn {
+            width: 36px;
+            height: 36px;
+            background: var(--gray-100);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+        }
+
+        .refresh-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--gray-600);
+        }
+
+        /* 统计卡片 */
+        .stats-row {
+            display: flex;
+            gap: 12px;
+            padding: 16px 16px 8px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: white;
+            border-radius: var(--radius);
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-100);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .stat-value.online { color: var(--success); }
+        .stat-value.limited { color: var(--warning); }
+        .stat-value.blocked { color: var(--danger); }
+
+        .stat-sub {
+            font-size: 11px;
+            color: var(--gray-400);
+        }
+
+        /* 速率汇总 */
+        .speed-summary {
+            margin: 0 16px 12px;
+            background: linear-gradient(135deg, #1E3A8A, #2563EB);
+            border-radius: var(--radius);
+            padding: 16px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .speed-item {
+            text-align: center;
+        }
+
+        .speed-icon {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .speed-val {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .speed-lbl {
+            font-size: 11px;
+            color: rgba(255,255,255,0.65);
+        }
+
+        .speed-divider {
+            width: 1px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* 设备分区 */
+        .section-header {
+            padding: 8px 16px 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-count {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        /* 设备卡片 */
+        .device-list {
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .device-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-100);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .device-card:active {
+            transform: scale(0.99);
+            box-shadow: var(--shadow);
+        }
+
+        .device-card.offline {
+            opacity: 0.65;
+        }
+
+        .device-card-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .device-icon-wrap {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 24px;
+        }
+
+        .device-icon-wrap.phone-type { background: #EFF6FF; }
+        .device-icon-wrap.laptop-type { background: #F0FDF4; }
+        .device-icon-wrap.tv-type { background: #FFF7ED; }
+        .device-icon-wrap.tablet-type { background: #FDF4FF; }
+        .device-icon-wrap.unknown-type { background: var(--gray-100); }
+
+        .device-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .device-name-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 3px;
+        }
+
+        .device-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-900);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .device-mac {
+            font-size: 11px;
+            color: var(--gray-400);
+            font-family: monospace;
+        }
+
+        .device-badges {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 20px;
+        }
+
+        .badge-online { background: var(--success-light); color: var(--success); }
+        .badge-offline { background: var(--gray-100); color: var(--gray-500); }
+        .badge-limited { background: var(--warning-light); color: var(--warning); }
+        .badge-blocked { background: var(--danger-light); color: var(--danger); }
+        .badge-wifi24 { background: #EFF6FF; color: var(--primary); }
+        .badge-wifi5 { background: #F0FDF4; color: var(--success); }
+        .badge-eth { background: var(--gray-100); color: var(--gray-600); }
+
+        .device-arrow {
+            color: var(--gray-300);
+            flex-shrink: 0;
+        }
+
+        .device-arrow svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--gray-300);
+        }
+
+        .device-speeds {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--gray-100);
+        }
+
+        .speed-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .speed-pill-icon {
+            font-size: 12px;
+        }
+
+        .speed-pill-text {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        .speed-pill-text span {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .limit-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .limit-tag {
+            font-size: 11px;
+            color: var(--warning);
+            background: var(--warning-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            color: var(--gray-400);
+        }
+
+        /* ===== 设备详情页 ===== */
+        #screen-detail {
+            background: var(--gray-50);
+            min-height: 100%;
+        }
+
+        .detail-header {
+            background: linear-gradient(135deg, #1E3A8A, #2563EB);
+            padding: 16px 20px 28px;
+        }
+
+        .detail-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+        }
+
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .detail-nav-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .detail-device-hero {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .detail-device-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            backdrop-filter: blur(10px);
+        }
+
+        .detail-device-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .detail-device-ip {
+            font-size: 13px;
+            color: rgba(255,255,255,0.75);
+            margin-bottom: 6px;
+        }
+
+        .detail-device-mac {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            font-family: monospace;
+        }
+
+        .detail-body {
+            padding: 16px;
+            margin-top: -12px;
+        }
+
+        /* 实时速率卡片 */
+        .realtime-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+
+        .realtime-speeds {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .speed-box {
+            background: var(--gray-50);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            text-align: center;
+        }
+
+        .speed-box-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .speed-box-val {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 2px;
+        }
+
+        .speed-box-unit {
+            font-size: 11px;
+            color: var(--gray-500);
+        }
+
+        .speed-box-label {
+            font-size: 11px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        /* 速率条 */
+        .speed-bar-wrap {
+            margin-top: 14px;
+        }
+
+        .speed-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-bottom: 5px;
+        }
+
+        .speed-bar {
+            height: 6px;
+            background: var(--gray-100);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .speed-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .speed-bar-fill.up { background: linear-gradient(90deg, #10B981, #059669); }
+        .speed-bar-fill.down { background: linear-gradient(90deg, #2563EB, #1D4ED8); }
+
+        /* 限速控制卡片 */
+        .control-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .control-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        /* 开关 */
+        .toggle {
+            width: 48px;
+            height: 28px;
+            background: var(--success);
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .toggle.off {
+            background: var(--gray-300);
+        }
+
+        .toggle::after {
+            content: '';
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: left 0.3s;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle.on::after {
+            left: 23px;
+        }
+
+        .limit-setting {
+            margin-bottom: 16px;
+        }
+
+        .limit-setting-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .limit-current {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .slider-wrap {
+            position: relative;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: linear-gradient(90deg, var(--primary) 40%, var(--gray-200) 40%);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2), 0 0 0 2px var(--primary);
+            cursor: pointer;
+        }
+
+        .slider-ticks {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+        }
+
+        .slider-tick {
+            font-size: 10px;
+            color: var(--gray-400);
+        }
+
+        .speed-presets {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1.5px solid var(--gray-200);
+            background: white;
+            font-size: 12px;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn.active, .preset-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .btn-apply {
+            width: 100%;
+            height: 44px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 16px;
+            transition: all 0.2s;
+        }
+
+        .btn-apply:hover { background: var(--primary-dark); }
+
+        .btn-danger {
+            width: 100%;
+            height: 44px;
+            background: var(--danger-light);
+            color: var(--danger);
+            border: 1.5px solid rgba(239,68,68,0.3);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        /* 操作菜单列表 */
+        .action-list {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .action-item:last-child {
+            border-bottom: none;
+        }
+
+        .action-item:active {
+            background: var(--gray-50);
+        }
+
+        .action-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .action-icon.blue { background: var(--primary-light); }
+        .action-icon.green { background: var(--success-light); }
+        .action-icon.orange { background: var(--warning-light); }
+        .action-icon.red { background: var(--danger-light); }
+
+        .action-content {
+            flex: 1;
+        }
+
+        .action-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--gray-800);
+            margin-bottom: 2px;
+        }
+
+        .action-desc {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .action-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-value {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .action-chevron svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--gray-300);
+        }
+
+        /* ===== 时间限制页面 ===== */
+        #screen-time {
+            background: var(--gray-50);
+            min-height: 100%;
+        }
+
+        .time-header {
+            background: linear-gradient(135deg, #4C1D95, #7C3AED);
+            padding: 16px 20px 24px;
+        }
+
+        .time-templates {
+            padding: 16px;
+        }
+
+        .template-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .template-card:active {
+            transform: scale(0.99);
+        }
+
+        .template-card.selected {
+            border-color: #7C3AED;
+            background: #FAF5FF;
+        }
+
+        .template-card.no-limit {
+            border-color: transparent;
+        }
+
+        .template-card.no-limit.selected {
+            border-color: var(--success);
+            background: var(--success-light);
+        }
+
+        .template-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .template-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .template-icon {
+            font-size: 18px;
+        }
+
+        .template-selected-icon {
+            width: 22px;
+            height: 22px;
+            background: #7C3AED;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .template-selected-icon.green { background: var(--success); }
+
+        .template-selected-icon svg {
+            width: 14px;
+            height: 14px;
+            fill: white;
+        }
+
+        .radio-circle {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--gray-300);
+        }
+
+        .template-days {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .day-pill {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .day-pill.inactive {
+            background: var(--gray-100);
+            color: var(--gray-400);
+        }
+
+        .template-time {
+            font-size: 12px;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .time-range-badge {
+            background: var(--gray-100);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .confirm-banner {
+            margin: 0 16px;
+            background: linear-gradient(135deg, #F3E8FF, #EDE9FE);
+            border: 1px solid #DDD6FE;
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .confirm-banner-icon {
+            font-size: 24px;
+        }
+
+        .confirm-banner-text {
+            font-size: 13px;
+            color: #5B21B6;
+            line-height: 1.5;
+        }
+
+        .confirm-banner-text strong {
+            font-weight: 700;
+        }
+
+        .btn-purple {
+            width: calc(100% - 32px);
+            margin: 12px 16px 0;
+            height: 44px;
+            background: linear-gradient(135deg, #7C3AED, #6D28D9);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ===== 设置页面 ===== */
+        #screen-settings {
+            background: var(--gray-50);
+            min-height: 100%;
+        }
+
+        .settings-header {
+            background: white;
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .settings-section {
+            margin: 16px 16px 0;
+        }
+
+        .settings-group {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .settings-group-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 16px 8px;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--gray-100);
+            cursor: pointer;
+        }
+
+        .settings-item:last-child { border-bottom: none; }
+
+        .settings-item-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .settings-item-label {
+            flex: 1;
+            font-size: 15px;
+            color: var(--gray-800);
+        }
+
+        .settings-item-value {
+            font-size: 13px;
+            color: var(--gray-400);
+            margin-right: 6px;
+        }
+
+        .settings-chevron svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--gray-300);
+        }
+
+        .router-info-card {
+            margin: 0 16px 16px;
+            background: linear-gradient(135deg, #1E3A8A, #2563EB);
+            border-radius: var(--radius);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .router-info-icon {
+            font-size: 36px;
+        }
+
+        .router-info-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 3px;
+        }
+
+        .router-info-detail {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 2px;
+        }
+
+        .router-status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+
+        /* Toast 提示 */
+        .toast {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .toast.show { opacity: 1; }
+
+        /* 加载状态 */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            border-radius: inherit;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 成功动画 */
+        .success-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .success-overlay.show { opacity: 1; }
+
+        .success-check {
+            width: 64px;
+            height: 64px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .success-check svg {
+            width: 36px;
+            height: 36px;
+            fill: white;
+        }
+
+        .success-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        /* 下拉刷新指示器 */
+        .pull-indicator {
+            text-align: center;
+            padding: 10px;
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+
+        /* 分隔线 */
+        .divider {
+            height: 8px;
+            background: var(--gray-100);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 500px) {
+            .phone {
+                width: 100%;
+                max-width: 390px;
+                height: 100vh;
+                border-radius: 0;
+            }
+            body {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ====== 手机1: 登录页 ====== -->
+<div class="phone-wrapper">
+    <div class="phone-label">登录页</div>
+    <div class="phone">
+        <div class="status-bar" style="background: transparent; position: absolute; top: 0; left: 0; right: 0; z-index: 20;">
+            <span class="time" style="color: white;">9:41</span>
+            <div class="icons">
+                <svg viewBox="0 0 24 24" style="fill: white;"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                <svg viewBox="0 0 24 24" style="fill: white;"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+        </div>
+        <div class="screen">
+            <div id="screen-login">
+                <div class="login-top">
+                    <div class="app-logo">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9z"/></svg>
+                    </div>
+                    <div class="app-name">NetControl Hub</div>
+                    <div class="app-tagline">智能网络管理，触手可及</div>
+                </div>
+
+                <div class="login-card">
+                    <div class="login-title">登录路由器</div>
+                    <div class="login-subtitle">连接至 192.168.2.1 · TP-LINK WTA302</div>
+
+                    <!-- 错误提示 (示例) -->
+                    <!-- <div class="error-banner">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        <span>密码错误，请重新输入</span>
+                    </div> -->
+
+                    <div class="form-group">
+                        <label class="form-label">路由器地址</label>
+                        <div class="input-wrap">
+                            <input class="form-input" type="text" value="192.168.2.1" style="padding-right: 14px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">管理员密码</label>
+                        <div class="input-wrap">
+                            <input class="form-input" type="password" placeholder="请输入路由器密码">
+                            <div class="input-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="remember-row">
+                        <div class="checkbox-wrap">
+                            <div class="checkbox on">
+                                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            </div>
+                            <span class="checkbox-label">记住密码</span>
+                        </div>
+                        <span class="router-addr">如何找到密码?</span>
+                    </div>
+
+                    <button class="btn-login">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                        登录
+                    </button>
+
+                    <div class="security-note">
+                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                        <p>请注意：所有请求通过局域网内HTTP传输，请仅在可信私有网络中使用本应用。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 手机2: 设备列表页 ====== -->
+<div class="phone-wrapper">
+    <div class="phone-label">设备列表</div>
+    <div class="phone">
+        <div class="status-bar">
+            <span class="time">9:41</span>
+            <div class="icons">
+                <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+        </div>
+
+        <div class="screen" id="devices-screen">
+            <div id="screen-devices">
+                <!-- 头部 -->
+                <div class="nav-header">
+                    <div class="nav-title-row">
+                        <div>
+                            <div class="nav-title">网络设备</div>
+                            <div class="nav-subtitle">上次刷新 09:40 · 下拉刷新</div>
+                        </div>
+                        <button class="refresh-btn">
+                            <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 统计 -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-label">在线设备</div>
+                        <div class="stat-value online">6</div>
+                        <div class="stat-sub">共 8 台设备</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">已限速</div>
+                        <div class="stat-value limited">2</div>
+                        <div class="stat-sub">台设备</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">已断网</div>
+                        <div class="stat-value blocked">1</div>
+                        <div class="stat-sub">台设备</div>
+                    </div>
+                </div>
+
+                <!-- 速率汇总 -->
+                <div class="speed-summary">
+                    <div class="speed-item">
+                        <div class="speed-icon">⬆️</div>
+                        <div class="speed-val">2.3 MB/s</div>
+                        <div class="speed-lbl">总上传速率</div>
+                    </div>
+                    <div class="speed-divider"></div>
+                    <div class="speed-item">
+                        <div class="speed-icon">⬇️</div>
+                        <div class="speed-val">8.7 MB/s</div>
+                        <div class="speed-lbl">总下载速率</div>
+                    </div>
+                    <div class="speed-divider"></div>
+                    <div class="speed-item">
+                        <div class="speed-icon">📡</div>
+                        <div class="speed-val">100M</div>
+                        <div class="speed-lbl">宽带带宽</div>
+                    </div>
+                </div>
+
+                <!-- 在线设备 -->
+                <div class="section-header">
+                    <span class="section-title">在线设备</span>
+                    <span class="section-count">6 台</span>
+                </div>
+
+                <div class="device-list">
+                    <!-- 设备1 - 手机 已限速 -->
+                    <div class="device-card">
+                        <div class="device-card-top">
+                            <div class="device-icon-wrap phone-type">📱</div>
+                            <div class="device-info">
+                                <div class="device-name-row">
+                                    <span class="device-name">小明的iPhone</span>
+                                </div>
+                                <div class="device-mac">44-85-00-b1-4c-2a</div>
+                                <div class="device-badges" style="margin-top: 5px;">
+                                    <span class="badge badge-online">● 在线</span>
+                                    <span class="badge badge-wifi5">5G WiFi</span>
+                                    <span class="badge badge-limited">⚡ 已限速</span>
+                                </div>
+                            </div>
+                            <div class="device-arrow"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                        <div class="device-speeds">
+                            <div class="speed-pill">
+                                <span class="speed-pill-icon">⬆️</span>
+                                <span class="speed-pill-text"><span>320</span> KB/s</span>
+                            </div>
+                            <div class="speed-pill">
+                                <span class="speed-pill-icon">⬇️</span>
+                                <span class="speed-pill-text"><span>1.2</span> MB/s</span>
+                            </div>
+                            <div class="limit-info">
+                                <span class="limit-tag">↑ 512 KB/s ↓ 2 MB/s</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 设备2 - 电脑 正常 -->
+                    <div class="device-card">
+                        <div class="device-card-top">
+                            <div class="device-icon-wrap laptop-type">💻</div>
+                            <div class="device-info">
+                                <div class="device-name-row">
+                                    <span class="device-name">DESKTOP-7NC8I3N</span>
+                                </div>
+                                <div class="device-mac">C8-3A-35-05-f1-88</div>
+                                <div class="device-badges" style="margin-top: 5px;">
+                                    <span class="badge badge-online">● 在线</span>
+                                    <span class="badge badge-eth">🔌 有线</span>
+                                </div>
+                            </div>
+                            <div class="device-arrow"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                        <div class="device-speeds">
+                            <div class="speed-pill">
+                                <span class="speed-pill-icon">⬆️</span>
+                                <span class="speed-pill-text"><span>1.5</span> MB/s</span>
+                            </div>
+                            <div class="speed-pill">
+                                <span class="speed-pill-icon">⬇️</span>
+                                <span class="speed-pill-text"><span>6.8</span> MB/s</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 设备3 - 平板 已断网 -->
+                    <div class="device-card">
+                        <div class="device-card-top">
+                            <div class="device-icon-wrap tablet-type">📺</div>
+                            <div class="device-info">
+                                <div class="device-name-row">
+                                    <span class="device-name">小红的iPad</span>
+                                </div>
+                                <div class="device-mac">A4-C3-F0-44-2B-11</div>
+                                <div class="device-badges" style="margin-top: 5px;">
+                                    <span class="badge badge-online">● 在线</span>
+                                    <span class="badge badge-wifi24">2.4G WiFi</span>
+                                    <span class="badge badge-blocked">🚫 已断网</span>
+                                </div>
+                            </div>
+                            <div class="device-arrow"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                        <div class="device-speeds">
+                            <div class="speed-pill">
+                                <span class="speed-pill-icon">⬆️</span>
+                                <span class="speed-pill-text"><span>0</span> KB/s</span>
+                            </div>
+                            <div class="speed-pill">
+                                <span class="speed-pill-icon">⬇️</span>
+                                <span class="speed-pill-text"><span>0</span> KB/s</span>
+                            </div>
+                            <div class="limit-info">
+                                <span class="limit-tag" style="background: var(--danger-light); color: var(--danger);">断网中</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 设备4 - 智能电视 -->
+                    <div class="device-card">
+                        <div class="device-card-top">
+                            <div class="device-icon-wrap tv-type">📡</div>
+                            <div class="device-info">
+                                <div class="device-name-row">
+                                    <span class="device-name">小米电视6</span>
+                                </div>
+                                <div class="device-mac">F0-B4-29-AB-CD-12</div>
+                                <div class="device-badges" style="margin-top: 5px;">
+                                    <span class="badge badge-online">● 在线</span>
+                                    <span class="badge badge-wifi5">5G WiFi</span>
+                                </div>
+                            </div>
+                            <div class="device-arrow"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                        <div class="device-speeds">
+                            <div class="speed-pill">
+                                <span class="speed-pill-icon">⬆️</span>
+                                <span class="speed-pill-text"><span>48</span> KB/s</span>
+                            </div>
+                            <div class="speed-pill">
+                                <span class="speed-pill-icon">⬇️</span>
+                                <span class="speed-pill-text"><span>3.2</span> MB/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 离线设备 -->
+                <div class="section-header" style="margin-top: 8px;">
+                    <span class="section-title">离线设备</span>
+                    <span class="section-count">2 台</span>
+                </div>
+
+                <div class="device-list" style="margin-bottom: 20px;">
+                    <div class="device-card offline">
+                        <div class="device-card-top">
+                            <div class="device-icon-wrap phone-type">📱</div>
+                            <div class="device-info">
+                                <div class="device-name-row">
+                                    <span class="device-name">爸爸的小米手机</span>
+                                </div>
+                                <div class="device-mac">88-32-9B-C4-11-FA</div>
+                                <div class="device-badges" style="margin-top: 5px;">
+                                    <span class="badge badge-offline">○ 离线</span>
+                                </div>
+                            </div>
+                            <div class="device-arrow"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <div class="tab-item active">
+                <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg></div>
+                <span class="tab-text" style="color: var(--primary);">设备</span>
+            </div>
+            <div class="tab-item">
+                <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div>
+                <span class="tab-text">时段</span>
+            </div>
+            <div class="tab-item">
+                <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
+                <span class="tab-text">设置</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 手机3: 设备详情页 ====== -->
+<div class="phone-wrapper">
+    <div class="phone-label">设备详情 / 限速控制</div>
+    <div class="phone">
+        <div class="status-bar" style="background: transparent; position: absolute; top: 0; left: 0; right: 0; z-index: 20;">
+            <span class="time" style="color: white;">9:41</span>
+            <div class="icons">
+                <svg viewBox="0 0 24 24" style="fill: white;"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                <svg viewBox="0 0 24 24" style="fill: white;"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+        </div>
+
+        <div class="screen">
+            <div id="screen-detail">
+                <!-- 详情头部 -->
+                <div class="detail-header">
+                    <div class="detail-nav" style="padding-top: 44px;">
+                        <button class="back-btn">
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        </button>
+                        <span class="detail-nav-title">设备详情</span>
+                    </div>
+                    <div class="detail-device-hero">
+                        <div class="detail-device-icon">📱</div>
+                        <div>
+                            <div class="detail-device-name">小明的iPhone</div>
+                            <div class="detail-device-ip">IP: 192.168.2.105</div>
+                            <div class="detail-device-mac">44:85:00:B1:4C:2A</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-body">
+                    <!-- 实时速率 -->
+                    <div class="realtime-card">
+                        <div class="card-title">实时速率</div>
+                        <div class="realtime-speeds">
+                            <div class="speed-box">
+                                <div class="speed-box-icon">⬆️</div>
+                                <div class="speed-box-val">320</div>
+                                <div class="speed-box-unit">KB/s</div>
+                                <div class="speed-box-label">上传速率</div>
+                            </div>
+                            <div class="speed-box">
+                                <div class="speed-box-icon">⬇️</div>
+                                <div class="speed-box-val">1.2</div>
+                                <div class="speed-box-unit">MB/s</div>
+                                <div class="speed-box-label">下载速率</div>
+                            </div>
+                        </div>
+                        <div class="speed-bar-wrap">
+                            <div class="speed-bar-label">
+                                <span>上传占用</span>
+                                <span style="color: var(--success);">62%</span>
+                            </div>
+                            <div class="speed-bar">
+                                <div class="speed-bar-fill up" style="width: 62%;"></div>
+                            </div>
+                            <div class="speed-bar-label">
+                                <span>下载占用</span>
+                                <span style="color: var(--primary);">60%</span>
+                            </div>
+                            <div class="speed-bar">
+                                <div class="speed-bar-fill down" style="width: 60%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 限速控制卡片 -->
+                    <div class="control-card">
+                        <div class="control-header">
+                            <div>
+                                <div class="card-title" style="margin-bottom: 2px;">限速控制</div>
+                                <div style="font-size: 12px; color: var(--gray-400);">已启用限速</div>
+                            </div>
+                            <div class="toggle on" id="speed-toggle"></div>
+                        </div>
+
+                        <!-- 下载限速 -->
+                        <div class="limit-setting">
+                            <div class="limit-setting-label">
+                                <span>⬇️ 下载限速</span>
+                                <span class="limit-current" id="down-val">2048 KB/s</span>
+                            </div>
+                            <input type="range" min="0" max="10240" value="2048" step="256" id="down-slider" oninput="updateSlider('down')">
+                            <div class="slider-ticks">
+                                <span class="slider-tick">不限</span>
+                                <span class="slider-tick">2.5MB</span>
+                                <span class="slider-tick">5MB</span>
+                                <span class="slider-tick">7.5MB</span>
+                                <span class="slider-tick">10MB</span>
+                            </div>
+                        </div>
+
+                        <!-- 上传限速 -->
+                        <div class="limit-setting">
+                            <div class="limit-setting-label">
+                                <span>⬆️ 上传限速</span>
+                                <span class="limit-current" id="up-val">512 KB/s</span>
+                            </div>
+                            <input type="range" min="0" max="10240" value="512" step="256" id="up-slider" oninput="updateSlider('up')">
+                            <div class="slider-ticks">
+                                <span class="slider-tick">不限</span>
+                                <span class="slider-tick">2.5MB</span>
+                                <span class="slider-tick">5MB</span>
+                                <span class="slider-tick">7.5MB</span>
+                                <span class="slider-tick">10MB</span>
+                            </div>
+                        </div>
+
+                        <!-- 快捷预设 -->
+                        <div style="font-size: 12px; color: var(--gray-500); margin-bottom: 6px;">快捷预设</div>
+                        <div class="speed-presets">
+                            <div class="preset-btn" onclick="setPreset(0)">不限速</div>
+                            <div class="preset-btn" onclick="setPreset(512)">512 KB/s</div>
+                            <div class="preset-btn active" onclick="setPreset(1024)">1 MB/s</div>
+                            <div class="preset-btn" onclick="setPreset(2048)">2 MB/s</div>
+                            <div class="preset-btn" onclick="setPreset(5120)">5 MB/s</div>
+                        </div>
+
+                        <button class="btn-apply" id="apply-btn" onclick="showSuccess()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            应用限速设置
+                        </button>
+                    </div>
+
+                    <!-- 操作列表 -->
+                    <div class="action-list">
+                        <div class="action-item">
+                            <div class="action-icon orange">⏰</div>
+                            <div class="action-content">
+                                <div class="action-title">上网时间限制</div>
+                                <div class="action-desc">当前: 午夜剧场模板</div>
+                            </div>
+                            <div class="action-right">
+                                <span class="action-value" style="color: var(--warning); font-size: 11px;">生效中</span>
+                                <div class="action-chevron"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                            </div>
+                        </div>
+                        <div class="action-item">
+                            <div class="action-icon green">📝</div>
+                            <div class="action-content">
+                                <div class="action-title">修改设备备注</div>
+                                <div class="action-desc">当前: 小明的iPhone</div>
+                            </div>
+                            <div class="action-right">
+                                <div class="action-chevron"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 断网按钮 -->
+                    <button class="btn-danger">
+                        🚫 断开此设备网络
+                    </button>
+
+                    <div style="height: 20px;"></div>
+                </div>
+
+                <!-- 成功反馈 -->
+                <div class="success-overlay" id="success-overlay">
+                    <div class="success-check">
+                        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    </div>
+                    <div class="success-text">限速设置已生效</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 手机4: 上网时间限制页 ====== -->
+<div class="phone-wrapper">
+    <div class="phone-label">上网时间限制</div>
+    <div class="phone">
+        <div class="status-bar" style="background: transparent; position: absolute; top: 0; left: 0; right: 0; z-index: 20;">
+            <span class="time" style="color: white;">9:41</span>
+            <div class="icons">
+                <svg viewBox="0 0 24 24" style="fill: white;"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                <svg viewBox="0 0 24 24" style="fill: white;"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+        </div>
+
+        <div class="screen">
+            <div id="screen-time">
+                <div class="time-header" style="padding-top: 60px;">
+                    <div class="detail-nav" style="margin-bottom: 16px;">
+                        <button class="back-btn">
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        </button>
+                        <span class="detail-nav-title">上网时间限制</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="font-size: 28px;">📱</div>
+                        <div>
+                            <div style="font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 2px;">正在设置</div>
+                            <div style="font-size: 18px; font-weight: 700; color: white;">小明的iPhone</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="time-templates">
+                    <!-- 不受限制 -->
+                    <div class="template-card no-limit" onclick="selectTemplate(this, '不受限制')">
+                        <div class="template-top">
+                            <div class="template-name">
+                                <span class="template-icon">✅</span>
+                                不受限制
+                            </div>
+                            <div class="radio-circle" id="radio-0"></div>
+                        </div>
+                        <div class="template-time" style="color: var(--gray-400);">设备可随时自由上网</div>
+                    </div>
+
+                    <!-- 模板1 -->
+                    <div class="template-card selected" onclick="selectTemplate(this, '午夜剧场')">
+                        <div class="template-top">
+                            <div class="template-name">
+                                <span class="template-icon">🌙</span>
+                                午夜剧场
+                            </div>
+                            <div class="template-selected-icon">
+                                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            </div>
+                        </div>
+                        <div class="template-days">
+                            <span class="day-pill">周一</span>
+                            <span class="day-pill">周二</span>
+                            <span class="day-pill">周三</span>
+                            <span class="day-pill">周四</span>
+                            <span class="day-pill">周五</span>
+                            <span class="day-pill inactive">周六</span>
+                            <span class="day-pill inactive">周日</span>
+                        </div>
+                        <div class="template-time">
+                            禁止上网时段：
+                            <span class="time-range-badge">22:00 - 07:00</span>
+                        </div>
+                    </div>
+
+                    <!-- 模板2 -->
+                    <div class="template-card" onclick="selectTemplate(this, '学习时段')">
+                        <div class="template-top">
+                            <div class="template-name">
+                                <span class="template-icon">📚</span>
+                                学习时段
+                            </div>
+                            <div class="radio-circle"></div>
+                        </div>
+                        <div class="template-days">
+                            <span class="day-pill inactive">周一</span>
+                            <span class="day-pill inactive">周二</span>
+                            <span class="day-pill inactive">周三</span>
+                            <span class="day-pill inactive">周四</span>
+                            <span class="day-pill inactive">周五</span>
+                            <span class="day-pill">周六</span>
+                            <span class="day-pill">周日</span>
+                        </div>
+                        <div class="template-time">
+                            禁止上网时段：
+                            <span class="time-range-badge">09:00 - 11:30</span>
+                        </div>
+                    </div>
+
+                    <!-- 模板3 -->
+                    <div class="template-card" onclick="selectTemplate(this, '晚间限制')">
+                        <div class="template-top">
+                            <div class="template-name">
+                                <span class="template-icon">🌃</span>
+                                晚间限制
+                            </div>
+                            <div class="radio-circle"></div>
+                        </div>
+                        <div class="template-days">
+                            <span class="day-pill">周一</span>
+                            <span class="day-pill">周二</span>
+                            <span class="day-pill">周三</span>
+                            <span class="day-pill">周四</span>
+                            <span class="day-pill">周五</span>
+                            <span class="day-pill">周六</span>
+                            <span class="day-pill">周日</span>
+                        </div>
+                        <div class="template-time">
+                            禁止上网时段：
+                            <span class="time-range-badge">21:00 - 08:00</span>
+                        </div>
+                    </div>
+
+                    <!-- 模板4 -->
+                    <div class="template-card" onclick="selectTemplate(this, '午休保护')">
+                        <div class="template-top">
+                            <div class="template-name">
+                                <span class="template-icon">😴</span>
+                                午休保护
+                            </div>
+                            <div class="radio-circle"></div>
+                        </div>
+                        <div class="template-days">
+                            <span class="day-pill inactive">周一</span>
+                            <span class="day-pill inactive">周二</span>
+                            <span class="day-pill inactive">周三</span>
+                            <span class="day-pill inactive">周四</span>
+                            <span class="day-pill inactive">周五</span>
+                            <span class="day-pill">周六</span>
+                            <span class="day-pill">周日</span>
+                        </div>
+                        <div class="template-time">
+                            禁止上网时段：
+                            <span class="time-range-badge">12:00 - 14:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 确认提示 -->
+                <div class="confirm-banner" id="confirm-banner">
+                    <div class="confirm-banner-icon">⚠️</div>
+                    <div class="confirm-banner-text">
+                        该设备上网时间将受 <strong>午夜剧场</strong> 限制，每天 22:00 后自动断网。
+                    </div>
+                </div>
+
+                <button class="btn-purple">确认应用此时段规则</button>
+                <div style="height: 20px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 手机5: 设置页 ====== -->
+<div class="phone-wrapper">
+    <div class="phone-label">设置页</div>
+    <div class="phone">
+        <div class="status-bar">
+            <span class="time">9:41</span>
+            <div class="icons">
+                <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+        </div>
+
+        <div class="screen">
+            <div id="screen-settings">
+                <div class="settings-header">
+                    <div class="nav-title">设置</div>
+                    <div class="nav-subtitle">NetControl Hub V1.0</div>
+                </div>
+
+                <!-- 路由器信息卡片 -->
+                <div style="height: 16px;"></div>
+                <div class="router-info-card">
+                    <div class="router-info-icon">📡</div>
+                    <div style="flex: 1;">
+                        <div class="router-info-name">TP-LINK WTA302</div>
+                        <div class="router-info-detail">
+                            <span class="router-status-dot"></span>已连接 · 192.168.2.1
+                        </div>
+                        <div class="router-info-detail">固件版本: 0693</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); border-radius: 8px; padding: 6px 10px; font-size: 11px; color: white; font-weight: 600; cursor: pointer;">
+                        切换
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <!-- 连接设置 -->
+                    <div class="settings-group-title">连接设置</div>
+                    <div class="settings-group">
+                        <div class="settings-item">
+                            <div class="settings-item-icon" style="background: #EFF6FF;">🌐</div>
+                            <span class="settings-item-label">路由器地址</span>
+                            <span class="settings-item-value">192.168.2.1</span>
+                            <div class="settings-chevron"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-icon" style="background: #F0FDF4;">🔑</div>
+                            <span class="settings-item-label">管理员密码</span>
+                            <span class="settings-item-value">已保存</span>
+                            <div class="settings-chevron"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-icon" style="background: #FFF7ED;">⏱️</div>
+                            <span class="settings-item-label">请求超时时间</span>
+                            <span class="settings-item-value">5 秒</span>
+                            <div class="settings-chevron"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-icon" style="background: #EFF6FF;">🔄</div>
+                            <span class="settings-item-label">自动刷新间隔</span>
+                            <span class="settings-item-value">30 秒</span>
+                            <div class="settings-chevron"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                    </div>
+
+                    <!-- 时间模板管理 -->
+                    <div class="settings-group-title">时间模板管理</div>
+                    <div class="settings-group">
+                        <div class="settings-item">
+                            <div class="settings-item-icon" style="background: #FDF4FF;">📋</div>
+                            <span class="settings-item-label">查看所有模板</span>
+                            <span class="settings-item-value">4 个</span>
+                            <div class="settings-chevron"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-icon" style="background: #ECFDF5;">➕</div>
+                            <span class="settings-item-label">新建时间模板</span>
+                            <span class="settings-item-value"></span>
+                            <div class="settings-chevron"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                    </div>
+
+                    <!-- 通知与安全 -->
+                    <div class="settings-group-title">通知与安全</div>
+                    <div class="settings-group">
+                        <div class="settings-item">
+                            <div class="settings-item-icon" style="background: #FFF7ED;">🔔</div>
+                            <span class="settings-item-label">高占用带宽提醒</span>
+                            <div class="toggle on" style="width: 40px; height: 24px;"></div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-icon" style="background: #FEF2F2;">🛡️</div>
+                            <span class="settings-item-label">安全存储密码</span>
+                            <div class="toggle on" style="width: 40px; height: 24px;"></div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-icon" style="background: #F0FDF4;">📜</div>
+                            <span class="settings-item-label">安全风险说明</span>
+                            <div class="settings-chevron"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                    </div>
+
+                    <!-- 关于 -->
+                    <div class="settings-group-title">关于</div>
+                    <div class="settings-group">
+                        <div class="settings-item">
+                            <div class="settings-item-icon" style="background: #EFF6FF;">ℹ️</div>
+                            <span class="settings-item-label">版本信息</span>
+                            <span class="settings-item-value">V1.0.0</span>
+                            <div class="settings-chevron"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                        <div class="settings-item">
+                            <div class="settings-item-icon" style="background: var(--danger-light);">🚪</div>
+                            <span class="settings-item-label" style="color: var(--danger);">退出登录</span>
+                            <div class="settings-chevron"><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+                        </div>
+                    </div>
+
+                </div>
+                <div style="height: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <div class="tab-item">
+                <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg></div>
+                <span class="tab-text">设备</span>
+            </div>
+            <div class="tab-item">
+                <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div>
+                <span class="tab-text">时段</span>
+            </div>
+            <div class="tab-item active">
+                <div class="tab-icon"><svg viewBox="0 0 24 24" style="fill: var(--primary);"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></div>
+                <span class="tab-text" style="color: var(--primary);">设置</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 手机6: 登录中/超时错误状态 ====== -->
+<div class="phone-wrapper">
+    <div class="phone-label">异常 & 空状态</div>
+    <div class="phone">
+        <div class="status-bar" style="background: transparent; position: absolute; top: 0; left: 0; right: 0; z-index: 20;">
+            <span class="time" style="color: white;">9:41</span>
+            <div class="icons">
+                <svg viewBox="0 0 24 24" style="fill: white;"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                <svg viewBox="0 0 24 24" style="fill: white;"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+        </div>
+        <div class="screen">
+            <div style="background: linear-gradient(145deg, #1E3A8A 0%, #2563EB 50%, #3B82F6 100%); min-height: 100%; display: flex; flex-direction: column; padding: 0 28px;">
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 40px;">
+                    <div class="app-logo">
+                        <svg viewBox="0 0 24 24" style="width:44px;height:44px;fill:white;"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                    </div>
+                    <div class="app-name">NetControl Hub</div>
+                    <div class="app-tagline">智能网络管理，触手可及</div>
+                </div>
+
+                <div class="login-card">
+                    <div class="login-title">登录路由器</div>
+                    <div class="login-subtitle">连接至 192.168.2.1</div>
+
+                    <!-- 密码错误示例 -->
+                    <div class="error-banner">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        <span>密码错误，请重新输入</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">路由器地址</label>
+                        <div class="input-wrap">
+                            <input class="form-input" type="text" value="192.168.2.1" style="padding-right:14px; border-color: var(--danger); background: var(--danger-light);">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">管理员密码</label>
+                        <div class="input-wrap">
+                            <input class="form-input" type="password" value="wrongpass" style="border-color: var(--danger); background: var(--danger-light);">
+                            <div class="input-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="remember-row">
+                        <div class="checkbox-wrap">
+                            <div class="checkbox on">
+                                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            </div>
+                            <span class="checkbox-label">记住密码</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-login" style="background: linear-gradient(135deg, var(--danger), #DC2626); box-shadow: 0 4px 12px rgba(239,68,68,0.4);">
+                        重试连接
+                    </button>
+
+                    <!-- 超时提示 -->
+                    <div style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 8px; padding: 10px 12px; margin-top: 14px; display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 16px;">📶</span>
+                        <div>
+                            <div style="font-size: 12px; font-weight: 600; color: var(--gray-700);">无法连接到路由器</div>
+                            <div style="font-size: 11px; color: var(--gray-500); margin-top: 2px;">请确认已连接至家庭/办公室WiFi</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 空设备列表状态 -->
+                <div style="background: white; border-radius: 16px; padding: 28px; margin-bottom: 30px; text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 12px;">📡</div>
+                    <div style="font-size: 16px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px;">当前无设备连接</div>
+                    <div style="font-size: 13px; color: var(--gray-400); line-height: 1.5;">路由器已连接，但暂无<br>终端设备接入网络</div>
+                    <button style="margin-top: 16px; padding: 8px 24px; background: var(--primary-light); color: var(--primary); border: none; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;">🔄 重新扫描</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 限速滑块交互
+    function updateSlider(type) {
+        const slider = document.getElementById(type + '-slider');
+        const valEl = document.getElementById(type + '-val');
+        const val = parseInt(slider.value);
+        
+        if (val === 0) {
+            valEl.textContent = '不限速';
+            valEl.style.color = '#10B981';
+        } else if (val >= 1024) {
+            valEl.textContent = (val / 1024).toFixed(1).replace('.0','') + ' MB/s';
+            valEl.style.color = '#2563EB';
+        } else {
+            valEl.textContent = val + ' KB/s';
+            valEl.style.color = '#2563EB';
+        }
+
+        // 更新滑块背景
+        const pct = (val / 10240) * 100;
+        slider.style.background = `linear-gradient(90deg, var(--primary) ${pct}%, var(--gray-200) ${pct}%)`;
+    }
+
+    function setPreset(val) {
+        document.getElementById('down-slider').value = val;
+        document.getElementById('up-slider').value = val > 512 ? 512 : val;
+        updateSlider('down');
+        updateSlider('up');
+
+        // 更新预设按钮状态
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    // 成功动画
+    function showSuccess() {
+        const overlay = document.getElementById('success-overlay');
+        overlay.classList.add('show');
+        overlay.style.pointerEvents = 'all';
+        setTimeout(() => {
+            overlay.classList.remove('show');
+            overlay.style.pointerEvents = 'none';
+        }, 1800);
+    }
+
+    // 时间模板选择
+    function selectTemplate(card, name) {
+        const cards = card.parentElement.querySelectorAll('.template-card');
+        cards.forEach(c => {
+            c.classList.remove('selected');
+            const icon = c.querySelector('.template-selected-icon');
+            const radio = c.querySelector('.radio-circle');
+            if (icon) {
+                const radioNew = document.createElement('div');
+                radioNew.className = 'radio-circle';
+                icon.parentNode.replaceChild(radioNew, icon);
+            }
+        });
+
+        card.classList.add('selected');
+        const radioEl = card.querySelector('.radio-circle');
+        if (radioEl) {
+            const selectedIcon = document.createElement('div');
+            selectedIcon.className = 'template-selected-icon' + (name === '不受限制' ? ' green' : '');
+            selectedIcon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+            radioEl.parentNode.replaceChild(selectedIcon, radioEl);
+        }
+
+        // 更新确认提示
+        const banner = document.getElementById('confirm-banner');
+        if (name === '不受限制') {
+            banner.style.background = 'linear-gradient(135deg, #ECFDF5, #D1FAE5)';
+            banner.style.border = '1px solid #6EE7B7';
+            banner.querySelector('.confirm-banner-icon').textContent = '✅';
+            banner.querySelector('.confirm-banner-text').innerHTML = '设备将<strong>不受任何时段限制</strong>，可随时自由上网。';
+        } else {
+            banner.style.background = 'linear-gradient(135deg, #F3E8FF, #EDE9FE)';
+            banner.style.border = '1px solid #DDD6FE';
+            banner.querySelector('.confirm-banner-icon').textContent = '⚠️';
+            banner.querySelector('.confirm-banner-text').innerHTML = `该设备上网时间将受 <strong>${name}</strong> 限制，在指定时段内自动断网。`;
+        }
+    }
+
+    // 开关切换
+    document.querySelectorAll('.toggle').forEach(t => {
+        t.addEventListener('click', function() {
+            this.classList.toggle('on');
+            this.classList.toggle('off');
+        });
+    });
+
+    // 初始化滑块背景
+    updateSlider('down');
+    updateSlider('up');
+
+    // 模拟数字动画
+    function animateNumbers() {
+        const speeds = document.querySelectorAll('.speed-box-val');
+        setInterval(() => {
+            const vals = ['310', '330', '1.1', '1.3'];
+            if (speeds.length >= 2) {
+                speeds[0].textContent = Math.round(280 + Math.random() * 100);
+                speeds[1].textContent = (1 + Math.random() * 0.5).toFixed(1);
+            }
+        }, 2000);
+    }
+    animateNumbers();
+</script>
+</body>
+</html>

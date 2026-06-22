@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "NetControl Hub",
+    "slug": "NetControlHub",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.netcontrol.hub",
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#2563EB"
+      },
+      "package": "com.netcontrol.hub",
+      "usesCleartextTraffic": true
+    },
+    "plugins": [
+      "expo-secure-store"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "942c6d2b-16fc-42c0-bd40-b9d0bccaaa89"
+      }
+    },
+    "owner": "lwq8203"
+  }
+}
