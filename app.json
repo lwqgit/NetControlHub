@@ -21,7 +21,7 @@
       },
       "package": "com.netcontrol.hub",
       "usesCleartextTraffic": true,
-      "versionCode": 3
+      "versionCode": 4
     },
     "plugins": [
       "expo-secure-store",

@@ -78,4 +78,11 @@ eas build -p android --profile production
 
 # 或 EAS Build
 npx eas build --platform all
+
+# Android APK 清除缓存, 重新构建APK
+eas build -p android --profile production --clear-cache --non-interactive
+
+# 云端
+https://expo.dev/
+账号：lwq8203@163.com
 ```
